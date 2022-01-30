@@ -37,7 +37,7 @@ module Tidy.Codegen.Monad
 import Prelude
 
 import Control.Monad.Free (Free, runFree)
-import Control.Monad.State (class MonadTrans, StateT, modify_, runStateT, state)
+import Control.Monad.State (class MonadTrans, class MonadState, StateT, modify_, runStateT, state)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Writer (class MonadTell)
 import Data.Array as Array
@@ -112,6 +112,9 @@ instance Monad m => MonadTell (Array (Declaration e)) (CodegenT e m) where
 
 instance monadEffectCodegen :: MonadEffect m => MonadEffect (CodegenT e m) where
   liftEffect = lift <<< liftEffect
+
+instance monadStateCodegen :: MonadState s m => MonadState s (CodegenT e m) where
+  state f = lift (state f)
 
 type Codegen e = CodegenT e (Free Identity)
 
